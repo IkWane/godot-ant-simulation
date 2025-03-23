@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://b683wjmmmnlps"]
+
+[ext_resource type="Script" uid="uid://xjmu8k4hegd" path="res://AntSpawner.cs" id="1_4uwqj"]
+[ext_resource type="PackedScene" uid="uid://bbqldxar186g5" path="res://ant.tscn" id="2_sv5rg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4uwqj"]
+radius = 20.0
+
+[node name="AntSpawner" type="Node2D"]
+script = ExtResource("1_4uwqj")
+antScene = ExtResource("2_sv5rg")
+
+[node name="Area2D" type="Area2D" parent="."]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_4uwqj")
+
+[connection signal="area_entered" from="Area2D" to="." method="collectFood"]

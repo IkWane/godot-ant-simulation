@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1olsn6v0n4f0"]
+
+[ext_resource type="PackedScene" uid="uid://b683wjmmmnlps" path="res://ant_spawner.tscn" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://58hp6gmyxmtt" path="res://PheromoneGrid.cs" id="3_h2yge"]
+
+[node name="main" type="Node2D"]
+
+[node name="AntSpawner" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("1_0xm2m")]
+position = Vector2(211, 159)
+grid = NodePath("../PheromoneGrid")
+maxAnts = 100
+
+[node name="PheromoneGrid" type="Node2D" parent="."]
+script = ExtResource("3_h2yge")
+gridSize = Vector2i(230, 128)
+cellSize = Vector2(5, 5)
+decayTime = 50.0
