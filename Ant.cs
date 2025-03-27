@@ -14,6 +14,8 @@ public partial class Ant : Node2D
 	public PheromoneGrid grid;
 	public float foodStorage = 0f;
 	public int distance = 0;
+	public int nbPoints;
+	public int radius;
 	public override void _Ready()
 	{
 		rng = new Random();

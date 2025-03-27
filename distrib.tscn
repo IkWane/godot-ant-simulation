@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6vn4mq7age31"]
+
+[ext_resource type="Script" uid="uid://n17xwlgp8lnu" path="res://Distrib.cs" id="1_6p0v4"]
+
+[node name="distrib" type="Node2D"]
+position = Vector2(576, 311)
+script = ExtResource("1_6p0v4")
+nbPoints = 10
+radius = 10.0
