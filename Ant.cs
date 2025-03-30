@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -7,6 +8,7 @@ public partial class Ant : Node2D
 {
 	private Random rng;
 	private float timer;
+	public float angularMomentum;
 	int random_amplitude = 314159265 / 50;
 	float size;
 	public bool hasFood = false;
@@ -14,19 +16,22 @@ public partial class Ant : Node2D
 	public PheromoneGrid grid;
 	public float foodStorage = 0f;
 	public int distance = 0;
-	public int nbPoints;
-	public int radius;
+	public int pheromoneDetectionRadius = 3;
+	private List<Vector2I> pheromoneDetectionOffsets;
 	public override void _Ready()
 	{
 		rng = new Random();
 		size = ((CircleShape2D)GetChild(0).GetChild<CollisionShape2D>(0).Shape).Radius;
+		pheromoneDetectionOffsets = grid.generateOffsetsCircle(pheromoneDetectionRadius);
 		QueueRedraw();
 	}
 
 	public override void _Process(double delta)
 	{
-		Rotation = Rotation + rng.Next(-random_amplitude, random_amplitude) / 100000000f;
-		Vector2 sideVector = Transform.Y * size * 2f;
+		angularMomentum += rng.Next(-random_amplitude, random_amplitude) / 2000000000f;
+		Rotation += angularMomentum;
+		angularMomentum *= 0.90f;
+		Vector2 sideVector = Transform.Y * size;
 		Vector2 frontVector = Transform.X * size;
 		distance += 1;
 
@@ -49,40 +54,35 @@ public partial class Ant : Node2D
 
 		if (hasFood)
 		{
-			for (int i = 1; i < 15; i++)
-			{
-				values[0] += grid.getToHomeValueAt(this.GlobalPosition + (frontVector + sideVector) * i);
-				values[1] += grid.getToHomeValueAt(this.GlobalPosition + (frontVector - sideVector) * i);
-				values[2] += grid.getToHomeValueAt(this.GlobalPosition + frontVector * 2f * i);
-			}
+			values[0] = grid.getToHomeValueAtBatch(GlobalPosition + frontVector * 10f, pheromoneDetectionOffsets);
+			values[1] = grid.getToHomeValueAtBatch(GlobalPosition + frontVector * 5f - sideVector * 8f, pheromoneDetectionOffsets);
+			values[2] = grid.getToHomeValueAtBatch(GlobalPosition + frontVector * 5f + sideVector * 8f, pheromoneDetectionOffsets);
 		} else {
-			for (int i = 1; i < 15; i++)
-			{	
-				Vector2 pos = this.GlobalPosition + (frontVector + sideVector) * i;
-				values[0] += grid.getToFoodValueAt(pos);
-				values[0] += grid.getFoodValueAt(pos) * 50f;
+			Vector2 pos = GlobalPosition + frontVector * 10f;
+			values[0] = grid.getToFoodValueAtBatch(pos, pheromoneDetectionOffsets);
+			values[0] += grid.getFoodValueAtBatch(pos, pheromoneDetectionOffsets) * 50f;
+			
+			pos = GlobalPosition + frontVector * 5f - sideVector * 8f;
+			values[1] = grid.getToFoodValueAtBatch(pos, pheromoneDetectionOffsets);
+			values[1] += grid.getFoodValueAtBatch(pos, pheromoneDetectionOffsets) * 50f;
 
-				pos = this.GlobalPosition + (frontVector - sideVector) * i;
-				values[1] += grid.getToFoodValueAt(pos);
-				values[1] += grid.getFoodValueAt(pos) * 50f;
-
-				pos = this.GlobalPosition + frontVector * 2f * i;
-				values[2] += grid.getToFoodValueAt(pos);
-				values[2] += grid.getFoodValueAt(pos) * 50f;
-			}
+			pos = GlobalPosition + frontVector * 5f + sideVector * 8f;
+			values[2] = grid.getToFoodValueAtBatch(pos, pheromoneDetectionOffsets);
+			values[2] += grid.getFoodValueAtBatch(pos, pheromoneDetectionOffsets) * 50f;
 		}
 
 		var (value, index) = values.Select((n, i) => (n, i)).Max();
+		// Debug.WriteLine(values[0] + ", " + values[1] + ", " + values[2]);
 		float total = values[0] + values[1] + values[2];
 		hasTrail = value > 0f;
 		switch (index)
 		{
 			case 0:
-				Rotation += value / total * 0.05f;
+				angularMomentum += value / total * 0.005f;
 				break;
 
 			case 1:
-				Rotation -= value / total * 0.05f;
+				angularMomentum -= value / total * 0.005f;
 				break;
 
 			case 2:
@@ -131,6 +131,12 @@ public partial class Ant : Node2D
 		}
 		DrawCircle(Vector2.Zero, size, color);
 		DrawCircle(Vector2.Right * size, size/1.5f, Colors.Black);
+
+		// Color c = new Color(1, 0, 0, 0.5f);
+
+		// DrawCircle(Vector2.Right * size * 10f, grid.cellSize.X * pheromoneDetectionRadius, c);
+		// DrawCircle(Vector2.Right * size * 5f + Vector2.Up * size * 8f, grid.cellSize.X * pheromoneDetectionRadius, c);
+		// DrawCircle(Vector2.Right * size * 5f - Vector2.Up * size * 8f, grid.cellSize.X * pheromoneDetectionRadius, c);
 	}
 
 }

@@ -2,8 +2,10 @@
 
 [ext_resource type="Script" uid="uid://n17xwlgp8lnu" path="res://Distrib.cs" id="1_6p0v4"]
 
-[node name="distrib" type="Node2D"]
-position = Vector2(576, 311)
+[node name="center" type="Node2D"]
+
+[node name="distrib" type="Node2D" parent="."]
+position = Vector2(565, 333)
 script = ExtResource("1_6p0v4")
-nbPoints = 10
-radius = 10.0
+radius = 50
+cellSize = 5.0
