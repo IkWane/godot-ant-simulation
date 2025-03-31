@@ -15,7 +15,7 @@ public partial class AntSpawner : Node2D
 
     public override void _Ready()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 30; i++)
         { 
             spawnAnt();
         }
@@ -32,10 +32,10 @@ public partial class AntSpawner : Node2D
     }
     public override void _Process(double delta)
     {
-        if (foodStorage > 5f)
+        if (foodStorage >= 1f)
         {
             spawnAnt();
-            foodStorage = 0f;
+            foodStorage -= 1f;
         }
     }
 

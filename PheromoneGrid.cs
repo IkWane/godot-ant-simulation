@@ -24,20 +24,17 @@ public partial class PheromoneGrid : Node2D
     
     public override void _Process(double delta)
 	{
-        int cellCount = 0;
 		for (int i = 0; i < gridSize.X * gridSize.Y; i++)
         {
             if (toHomeGrid[i] > 0)
             {
                 toHomeGrid[i] -= 0.0000001f;
-                cellCount += 1; 
             } 
             if (toFoodGrid[i] > 0)
             {
                 toHomeGrid[i] -= 0.0000001f;
             }
         }
-        Debug.WriteLine(cellCount);
 
         if (Input.IsActionPressed("Click"))
         {

@@ -8,7 +8,7 @@
 [node name="AntSpawner" parent="." node_paths=PackedStringArray("grid") instance=ExtResource("1_0xm2m")]
 position = Vector2(281, 161)
 grid = NodePath("../PheromoneGrid")
-maxAnts = 100
+maxAnts = 20000
 
 [node name="PheromoneGrid" type="Node2D" parent="."]
 script = ExtResource("3_h2yge")
